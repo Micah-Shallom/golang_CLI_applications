@@ -1,7 +1,6 @@
 package todo
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 )
@@ -42,18 +41,18 @@ func TestComplete(t *testing.T) {
 func TestDelete(t *testing.T) {
 	l := List{}
 
-	strArr := []string{
+	task := []string{
 		"New String1",
 		"New String2",
 		"New String3",
 	}
 
-	for _, v := range strArr {
+	for _, v := range task {
 		l.Add(v)
 	}
 
-	if l[0].Task != strArr[0] {
-		t.Errorf("Expected %q, got %q instead.\n", strArr[0], l[0].Task)
+	if l[0].Task != task[0] {
+		t.Errorf("Expected %q, got %q instead.\n", task[0], l[0].Task)
 	}
 	
 	l.Delete(2)
@@ -62,8 +61,8 @@ func TestDelete(t *testing.T) {
 		t.Errorf("Expected length is %d, got %d instead\n", 2, len(l))
 	}
 	
-	if l[1].Task != strArr[2] {
-		t.Errorf("Expected %q, got %q instead.\n", strArr[2], l[1].Task)
+	if l[1].Task != task[2] {
+		t.Errorf("Expected %q, got %q instead.\n", task[2], l[1].Task)
 	}
 }
 
@@ -78,7 +77,7 @@ func TestSaveGet(t *testing.T){
 		t.Errorf("Expected %q, got %q instead. \n", taskName, l1[0].Task)
 	}
 
-	tf, err := ioutil.TempFile("", "")
+	tf, err := os.CreateTemp("", "")
 	if err != nil {
 		t.Errorf("Error creating temporary file %s", err )
 	}

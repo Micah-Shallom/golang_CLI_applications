@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	const todoFileName = ".todo.json"
+	const todoFileName = "todo.json"
 
 	l := &todo.List{}
 
@@ -17,9 +17,9 @@ func main() {
 	// 	fmt.Fprintln(os.Stderr, err)
 	// 	os.Exit(1)
 	// }
-
 	switch {
 	case len(os.Args) == 1:
+		l.Get(todoFileName)
 		for _, item := range *l {
 			fmt.Println(item.Task)
 		}
