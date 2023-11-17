@@ -15,6 +15,10 @@ type item struct {
 	CompletedAt 	time.Time
 }
 
+type Stringer interface{
+	String() string
+}
+
 type List []item
 
 func (l *List) Add(task string) {
@@ -28,9 +32,10 @@ func (l *List) Add(task string) {
 	*l = append(*l, t)
 }
 
+
 func (l *List) Complete(i int) error{
 	ls := *l
-
+	
 	if i <=0 || i > len(ls){
 		return fmt.Errorf("item %d does not exist", i)
 	}
@@ -55,7 +60,7 @@ func (l *List) Save(filename string) error{
 	if err != nil {
 		return err
 	}
-
+	
 	return os.WriteFile(filename, data, 0644)
 }
 
@@ -67,5 +72,17 @@ func (l *List) Get(filename string) error {
 		}
 		return err
 	}
-	return json.Unmarshal(data, l)
+		return json.Unmarshal(data, l)
+}
+
+func (l *List) String() string {
+	formatted := ""
+	for k, t := range *l {
+		prefix := "  "
+		if t.Done{
+			prefix = "X "
+		}
+		formatted += fmt.Sprintf("%s%d: %s\n", prefix, k+1, t.Task)
+	}
+	return formatted
 }
