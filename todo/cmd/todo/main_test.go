@@ -39,6 +39,8 @@ func TestMain(m *testing.M) {
 }
 
 func TestTodoCLI(t *testing.T) {
+	l := todo.List{}
+
 	task := "test task number 1"
 	dir, err := os.Getwd() //used to get the current working directory
 	if err != nil {
@@ -53,7 +55,7 @@ func TestTodoCLI(t *testing.T) {
 	// 	}
 	// })
 
-	t.Run("AddNewTaskFromArguments", func (t *testing.T) {
+	t.Run("AddNewTaskFromArguments", func(t *testing.T) {
 		cmd := exec.Command(cmdPath, "-add", task)
 		if err := cmd.Run(); err != nil {
 			t.Fatal()
@@ -86,21 +88,37 @@ func TestTodoCLI(t *testing.T) {
 			t.Errorf("Expected %q, got %q instead\n", expected, string(out))
 		}
 	})
-	
+
 	t.Run("CompleteTask", func(t *testing.T) {
 		cmd := exec.Command(cmdPath, "-complete", "1")
 		if err := cmd.Run(); err != nil {
 			t.Fatal(err)
 		}
-		l :=  todo.List{}
 
 		if err := l.Get(fileName); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
-		if l[0].Done != true{
+		if l[0].Done != true {
 			t.Errorf("Expected task %s to be %t but got %t", l[0].Task, true, l[0].Done)
 		}
+	})
+
+	t.Run("DeleteTask", func(t *testing.T) {
+		cmd := exec.Command(cmdPath, "-del", "1")
+		if err := cmd.Run(); err != nil {
+			t.Fatal(err)
+		}
+		if err := l.Get(fileName); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+
+		expectedLen := 1
+		if expectedLen != len(l) {
+			t.Errorf("Expected %v and got %v instead", expectedLen, len(l))
+		}
+
 	})
 
 }
