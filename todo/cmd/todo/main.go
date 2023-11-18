@@ -27,7 +27,7 @@ func main() {
 		flag.PrintDefaults()
 	}
 
-	var todoFileName = "todo.json"
+	var todoFileName = ".todo.json"
 
 	if os.Getenv("TODO_FILENAME") != "" {
 		todoFileName = os.Getenv("TODO_FILENAME")
