@@ -13,8 +13,8 @@ import (
 )
 
 var (
-	binName  = "todo"
-	fileName = "test_todo.json"
+	binName  = "test_todo"
+	fileName = ".todo.json"
 )
 
 func TestMain(m *testing.M) {

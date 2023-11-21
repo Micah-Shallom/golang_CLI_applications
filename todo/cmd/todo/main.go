@@ -7,9 +7,21 @@ import (
 	"io"
 	"os"
 	"strings"
+	"time"
 
 	todo "github.com/Micah-Shallom/modules"
 )
+
+func formatDateTime(l time.Time) (string, string) {
+	//Extract and print date component
+	year, month, day := l.Date()
+	date := fmt.Sprintf("%d-%02d-%02d", year, month, day)
+
+	// Extract and print the time components
+	hour, minute, second := l.Clock()
+	time := fmt.Sprintf("%02d:%02d:%02d", hour, minute, second)
+	return date, time
+}
 
 func main() {
 	//Parsing command line flags
@@ -18,6 +30,7 @@ func main() {
 	list := flag.Bool("list", false, "List all tasks")
 	complete := flag.Int("complete", 0, "Item to be completed")
 	delete := flag.Int("del", 0, "Item to be deleted")
+	verbose := flag.Bool("v", false, "Show more item information")
 	flag.Parse()
 
 	flag.Usage = func() {
@@ -45,12 +58,28 @@ func main() {
 	//decide what to do based on the provided flags
 	switch {
 	case *list:
-		// for _, item := range *l{
-		// 	if !item.Done{
-		// 		fmt.Printf("%s\n",item.Task)
-		// 	}
+		formatted := ""
+		for k, t := range *l {
+			prefix := "  "
+			if t.Done {
+				prefix = "X "
+			}
+			if *verbose {
+				date, time := formatDateTime(t.CreatedAt)
+				formatted += fmt.Sprintf("%s%d: %s  %s  %s\n", prefix, k+1, t.Task, date, time)
+			} else {
+				formatted += fmt.Sprintf("%s%d: %s\n", prefix, k+1, t.Task)
+			}
+		}
+		fmt.Println(formatted)
+	// 	fmt.Print(l) //leverages the springer interface
+
+	case *list && *verbose:
+		// if *verbose {
+		// 	for _, item := range *l {
+
 		// }
-		fmt.Print(l) //leverages the springer interface
+		fmt.Print(l)
 
 	// case *task != "":
 	// 	l.Add(*task)
