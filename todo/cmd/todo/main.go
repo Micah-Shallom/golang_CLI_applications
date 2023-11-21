@@ -31,6 +31,7 @@ func main() {
 	complete := flag.Int("complete", 0, "Item to be completed")
 	delete := flag.Int("del", 0, "Item to be deleted")
 	verbose := flag.Bool("v", false, "Show more item information")
+	show := flag.Bool("show-incompleted", false, "Show incompleted tasks")
 	flag.Parse()
 
 	flag.Usage = func() {
@@ -61,8 +62,14 @@ func main() {
 		formatted := ""
 		for k, t := range *l {
 			prefix := "  "
-			if t.Done {
-				prefix = "X "
+			if *show {
+				if t.Done {
+					continue
+				}
+			} else {
+				if t.Done {
+					prefix = "X "
+				}
 			}
 			if *verbose {
 				date, time := formatDateTime(t.CreatedAt)
