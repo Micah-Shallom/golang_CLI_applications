@@ -51,6 +51,7 @@ func main() {
 	//parse flags
 	filename := flag.String("file", "", "Markdown file to preview")
 	skipPreview := flag.Bool("s", false, "Skip auto-preview")
+	tFname := flag.String("t", "", "Alternate template name")
 	flag.Parse()
 
 	//if user did not provide input file, show usage
@@ -58,20 +59,23 @@ func main() {
 		flag.Usage()
 		os.Exit(1)
 	}
-	if err := run(*filename, os.Stdout, *skipPreview); err != nil {
+	if err := run(*filename, *tFname, os.Stdout, *skipPreview); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
 
-func run(filename string, out io.Writer, skipPreview bool) error {
+func run(filename string, tFname string ,out io.Writer, skipPreview bool) error {
 	//Read all the data from the input file and check for errors
 	input, err := os.ReadFile(filename)
 	if err != nil {
 		return err
 	}
 
-	htmlData := parseContent(input) //responsible for converting markdown to html
+	htmlData, err := parseContent(input, tFname) //responsible for converting markdown to html
+	if err != nil {
+		return err
+	}
 	// outName := fmt.Sprintf("%s.html", filepath.Base(filename))
 
 	//Create temporary file and check for errors
@@ -95,19 +99,40 @@ func run(filename string, out io.Writer, skipPreview bool) error {
 	return preview(outName)
 }
 
-func parseContent(input []byte) []byte {
+func parseContent(input []byte, tFname string) ([]byte, error) {
 	//Parse the markdown file through blackfriday and bluemonday to generate a valid and safe HTML
 	output := blackfriday.Run(input)
 	body := bluemonday.UGCPolicy().SanitizeBytes(output)
+
+	//parse the content of the defaultTemplate const into a new template
+	t, err := template.New("mdp").Parse(defaultTemplate)
+	if err != nil {
+		return nil, err
+	}
+
+	//if user provided alternate template file, replace template
+	if tFname != "" {
+		t, err = template.ParseFiles(tFname)
+	}
+
+	//instantiate the content type, adding the title and the body
+	c := content{
+		Title: "Markdown Preview Tool",
+		Body: template.HTML(body),
+	}
 	//Create a buffer of bytes to write to file
 	var buffer bytes.Buffer
 
-	//Write html to bytes buffer
-	buffer.WriteString(header)
-	buffer.Write(body)
-	buffer.WriteString(footer)
+	// //Write html to bytes buffer
+	// buffer.WriteString(header)
+	// buffer.Write(body)
+	// buffer.WriteString(footer)
 
-	return buffer.Bytes()
+	//execute the template with the content type
+	if err := t.Execute(&buffer, c); err != nil {
+		return nil, err
+	}
+	return buffer.Bytes(), nil
 }
 
 func saveHTML(outFName string, data []byte) error {
