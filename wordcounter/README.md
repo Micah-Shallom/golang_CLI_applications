@@ -1,4 +1,3 @@
-```markdown
 ## Word Counter
 
 This is a simple command-line utility in Go for counting lines, words, or bytes in a given text file or from standard input. The tool provides flexibility in the choice of operation, making it versatile for different use cases.
@@ -53,5 +52,3 @@ After building, you can run the tool as described in the examples above.
 Feel free to contribute to this project by submitting issues or pull requests. Your suggestions and improvements are welcome.
 
 Happy counting!
-```
-This generated readme provides information about how to use the Word Counter tool, its various features, and how to build and run it. Feel free to customize it based on your preferences.
