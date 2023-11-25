@@ -36,6 +36,7 @@ const (
 	<title>{{ .Title }}</title>
 	</head>
 	<body>
+	<h2>{{ .FileName}}</h2>
 	{{ .Body }}
 	</body>
 	</html>
@@ -44,6 +45,7 @@ const (
 
 type content struct {
 	Title string
+	FileName string
 	Body template.HTML
 }
 
@@ -72,7 +74,7 @@ func run(filename string, tFname string ,out io.Writer, skipPreview bool) error 
 		return err
 	}
 
-	htmlData, err := parseContent(input, tFname) //responsible for converting markdown to html
+	htmlData, err := parseContent(input, tFname, filename) //responsible for converting markdown to html
 	if err != nil {
 		return err
 	}
@@ -99,7 +101,7 @@ func run(filename string, tFname string ,out io.Writer, skipPreview bool) error 
 	return preview(outName)
 }
 
-func parseContent(input []byte, tFname string) ([]byte, error) {
+func parseContent(input []byte, tFname string, filename string) ([]byte, error) {
 	//Parse the markdown file through blackfriday and bluemonday to generate a valid and safe HTML
 	output := blackfriday.Run(input)
 	body := bluemonday.UGCPolicy().SanitizeBytes(output)
@@ -118,6 +120,7 @@ func parseContent(input []byte, tFname string) ([]byte, error) {
 	//instantiate the content type, adding the title and the body
 	c := content{
 		Title: "Markdown Preview Tool",
+		FileName: filename,
 		Body: template.HTML(body),
 	}
 	//Create a buffer of bytes to write to file
