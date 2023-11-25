@@ -13,6 +13,7 @@ import (
 
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday/v2"
+	"github.com/joho/godotenv"
 )
 
 // const (
@@ -28,8 +29,7 @@ import (
 // 	`
 // )
 
-const (
-	defaultTemplate = `<!DOCTYPE html>
+var defaultTemplate string = `<!DOCTYPE html>
 	<html>
 	<head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -41,7 +41,7 @@ const (
 	</body>
 	</html>
 `
-)
+
 
 type content struct {
 	Title string
@@ -50,6 +50,12 @@ type content struct {
 }
 
 func main() {
+	//get default template from dotenv file
+	if err := godotenv.Load(); err != nil {
+		fmt.Println("Error loading .env file", err)
+		return
+	}
+
 	//parse flags
 	filename := flag.String("file", "", "Markdown file to preview")
 	skipPreview := flag.Bool("s", false, "Skip auto-preview")
@@ -102,6 +108,11 @@ func run(filename string, tFname string ,out io.Writer, skipPreview bool) error 
 }
 
 func parseContent(input []byte, tFname string, filename string) ([]byte, error) {
+
+	if defaultTemplate == ""{
+		defaultTemplate = os.Getenv("defaultTemplate")
+	}
+
 	//Parse the markdown file through blackfriday and bluemonday to generate a valid and safe HTML
 	output := blackfriday.Run(input)
 	body := bluemonday.UGCPolicy().SanitizeBytes(output)
