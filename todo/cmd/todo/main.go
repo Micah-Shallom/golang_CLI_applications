@@ -12,17 +12,6 @@ import (
 	todo "github.com/Micah-Shallom/modules"
 )
 
-func formatDateTime(l time.Time) (string, string) {
-	//Extract and print date component
-	year, month, day := l.Date()
-	date := fmt.Sprintf("%d-%02d-%02d", year, month, day)
-
-	// Extract and print the time components
-	hour, minute, second := l.Clock()
-	time := fmt.Sprintf("%02d:%02d:%02d", hour, minute, second)
-	return date, time
-}
-
 func main() {
 	//Parsing command line flags
 	// task := flag.String("task", "", "Task to be included into the todo list")
@@ -81,19 +70,19 @@ func main() {
 		fmt.Println(formatted)
 	// 	fmt.Print(l) //leverages the springer interface
 
-	case *list && *verbose:
-		// if *verbose {
-		// 	for _, item := range *l {
+	// case *list && *verbose:
+	// 	// if *verbose {
+	// 	// 	for _, item := range *l {
 
-		// }
-		fmt.Print(l)
+	// 	// }
+	// 	fmt.Print(l)
 
-	// case *task != "":
-	// 	l.Add(*task)
+	// // case *task != "":
+	// // 	l.Add(*task)
 
-	// 	if err := l.Save(todoFileName); err != nil {
-	// 		fmt.Fprintln(os.Stderr, err)
-	// 		os.Exit(1)
+	// // 	if err := l.Save(todoFileName); err != nil {
+	// // 		fmt.Fprintln(os.Stderr, err)
+	// // 		os.Exit(1)
 	// 	}
 
 	case *add:
@@ -162,4 +151,16 @@ func getTask(r io.Reader, args ...string) (string, error) {
 	}
 
 	return s.Text(), nil //returns scanned text and error
+}
+
+
+func formatDateTime(l time.Time) (string, string) {
+	//Extract and print date component
+	year, month, day := l.Date()
+	date := fmt.Sprintf("%d-%02d-%02d", year, month, day)
+
+	// Extract and print the time components
+	hour, minute, second := l.Clock()
+	time := fmt.Sprintf("%02d:%02d:%02d", hour, minute, second)
+	return date, time
 }
