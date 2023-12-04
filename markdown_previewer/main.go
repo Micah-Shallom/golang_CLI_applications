@@ -6,14 +6,15 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"log"
 	"os"
 	"os/exec"
 	"runtime"
 	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday/v2"
-	"github.com/joho/godotenv"
 )
 
 // const (
@@ -62,25 +63,53 @@ func main() {
 	tFname := flag.String("t", "", "Alternate template name")
 	flag.Parse()
 
-	//if user did not provide input file, show usage
+	//if user did not provide input file, use STDIN
 	if *filename == "" {
-		flag.Usage()
-		os.Exit(1)
+		fmt.Println("Reading input from STDIN....")
+		inputBytes, err := io.ReadAll(os.Stdin)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error reading from STDIN", err)
+			os.Exit(1)
+		}
+		if err := run(inputBytes, *tFname, os.Stdout, *skipPreview); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
 	}
+
 	if err := run(*filename, *tFname, os.Stdout, *skipPreview); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
 
-func run(filename string, tFname string ,out io.Writer, skipPreview bool) error {
+func processInput(input interface{}) ([]byte, error) {
 	//Read all the data from the input file and check for errors
-	input, err := os.ReadFile(filename)
+
+	switch v := input.(type){
+	case string:
+		//check if the input contains a filename
+		inputByte, err := os.ReadFile(v)
+		if err != nil {
+			return nil, err
+		}
+		return inputByte, nil
+	case []byte:
+		return v, nil
+	default:
+		log.Fatal("Unknown input type")
+	}
+	return nil, nil
+}
+
+func run(input interface{}, tFname string ,out io.Writer, skipPreview bool) error {
+	
+	content, err := processInput(input)
 	if err != nil {
 		return err
 	}
 
-	htmlData, err := parseContent(input, tFname, filename) //responsible for converting markdown to html
+	htmlData, err := parseContent(content, tFname) //responsible for converting markdown to html
 	if err != nil {
 		return err
 	}
@@ -107,7 +136,7 @@ func run(filename string, tFname string ,out io.Writer, skipPreview bool) error 
 	return preview(outName)
 }
 
-func parseContent(input []byte, tFname string, filename string) ([]byte, error) {
+func parseContent(input []byte, tFname string) ([]byte, error) {
 
 	if defaultTemplate == ""{
 		defaultTemplate = os.Getenv("defaultTemplate")
@@ -129,6 +158,11 @@ func parseContent(input []byte, tFname string, filename string) ([]byte, error) 
 	}
 
 	//instantiate the content type, adding the title and the body
+	var filename string = ""
+	if type == string {
+
+	}
+
 	c := content{
 		Title: "Markdown Preview Tool",
 		FileName: filename,
