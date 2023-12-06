@@ -7,13 +7,48 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"time"
 )
 
-func filterOut(path, ext string, minSize int64, info os.FileInfo) bool {
-	if info.IsDir() || info.Size() < minSize {
+func filterOut(path string, exts []string, minSize int64 , dateTime DateTime, info os.FileInfo) bool {
+	if info.IsDir() || info.Size() < int64(minSize) {
 		return true
 	}
-	if ext != "" && filepath.Ext(path) != ext {
+
+	if dateTime.dt != "" || dateTime.info != ""{
+		layout := "2006-01-02 15:04:05"
+	
+		beforeDT, err1 := time.Parse(layout, dateTime.dt)
+		afterDT, err2 := time.Parse(layout, dateTime.dt)
+	
+		if err1 != nil || err2 != nil {
+			log.Fatal("Error parsing dates: ", err1, err2)
+			// return 
+		}
+	
+		pathDT, _ := time.Parse(layout, info.ModTime().Local().Format(layout))
+	
+		switch dateTime.info{
+		case "before":
+			if !pathDT.Before(beforeDT) {
+				return true
+			}
+		case "after":
+			if !pathDT.After(afterDT) {
+				return true
+			}
+		}
+	}
+	
+
+	ext := filepath.Ext(path)
+	if len(exts) != 0 {
+		for _, extValue := range exts{
+			if extValue != "" && ext != extValue{
+				continue
+			}
+			return false
+		}
 		return true
 	}
 	return false
@@ -23,8 +58,6 @@ func listFile(path string, out io.Writer) error {
 	_, err := fmt.Fprintln(out, path)
 	return err
 }
-
-
 
 func delFile(path string, delLogger *log.Logger) error {
 	if err := os.Remove(path); err != nil {
@@ -41,7 +74,7 @@ func archiveFile(destDir, root, path string) error {
 	if err != nil {
 		return err
 	}
-	if !info.IsDir(){
+	if !info.IsDir() {
 		return fmt.Errorf("%s is not a directory", destDir)
 	}
 
@@ -54,7 +87,7 @@ func archiveFile(destDir, root, path string) error {
 	dest := fmt.Sprintf("%s.gz", filepath.Base(path))
 	targetPath := filepath.Join(destDir, relDir, dest)
 
-	//with targetPath defined, create the target directory tree 
+	//with targetPath defined, create the target directory tree
 	if err := os.MkdirAll(filepath.Dir(targetPath), 0755); err != nil {
 		return err
 	}

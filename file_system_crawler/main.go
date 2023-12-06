@@ -7,26 +7,36 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 var (
 	f   = os.Stdout
+	extensions []string
 	err error
 )
 
 type config struct {
 	//extension to filter out
-	ext string
+	exts 	[]string
 	//min file size
-	size int64
+	size 	int64
 	//list files
-	list bool
+	list 	bool
 	//delete files
-	del bool
+	del 	bool
 	//log destination writer
-	wLog io.Writer
+	wLog 	io.Writer
 	//archive directory
 	archive string
+	//date and time before and after
+	before	string
+	after	string
+}
+
+type DateTime struct {
+	dt		string
+	info	string
 }
 
 func main() {
@@ -38,10 +48,12 @@ func main() {
 	del := flag.Bool("del", false, "Delete files")
 	archive := flag.String("archive", "", "archive directory")
 	//filter options
-	ext := flag.String("ext", "", "file extension to filter out")
+	exts := flag.String("ext", "", "file extension(s) to filter out")
 	size := flag.Int64("size", 0, "minimum file size")
+	before := flag.String("before", "", "return files created before specfied date and time")
+	after := flag.String("after", "", "return files created after specified date and time")
 	flag.Parse()
-	
+
 	if *logFile != "" {
 		f, err = os.OpenFile(*logFile, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0644)
 		if err != nil {
@@ -50,15 +62,20 @@ func main() {
 		}
 	}
 
-	c := config{
-		ext:  *ext,
-		size: *size,
-		list: *list,
-		del:  *del,
-		wLog: f,
-		archive: *archive,
+	if *exts != ""{
+		extensions = strings.Split(*exts, ",")
 	}
 
+	c := config{
+		exts:     extensions,
+		size:    *size,
+		list:    *list,
+		del:     *del,
+		wLog:    f,
+		archive: *archive,
+		before:	*before,
+		after:  *after,
+	}
 
 	if err := run(*root, os.Stdout, c); err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -74,7 +91,23 @@ func run(root string, out io.Writer, cfg config) error {
 			return err
 		}
 
-		if filterOut(path, cfg.ext, cfg.size, info) {
+		if cfg.before != "" && cfg.after != ""{
+			log.Fatal("provide only one of before or after flags at a time")
+			return nil
+		}
+
+		if cfg.before != ""{
+			if filterOut(path, cfg.exts, cfg.size, DateTime{dt: cfg.before, info: "before"} ,info) {
+				return nil
+			}
+		}
+
+		if cfg.after != ""{
+			if filterOut(path, cfg.exts, cfg.size, DateTime{dt: cfg.after, info: "after"} ,info) {
+				return nil
+			}
+		}
+		if filterOut(path, cfg.exts, cfg.size, DateTime{dt: "", info: ""} ,info){
 			return nil
 		}
 		// If list was explicitly set, dont do anything else
@@ -83,7 +116,7 @@ func run(root string, out io.Writer, cfg config) error {
 		}
 
 		//Archive files and continue if successful
-		if cfg.archive != ""{
+		if cfg.archive != "" {
 			if err := archiveFile(cfg.archive, root, path); err != nil {
 				return err
 			}
