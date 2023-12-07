@@ -44,7 +44,7 @@ func run(filenames []string, op string, column int, out io.Writer) error {
 		//open the file for reading
 		f, err := os.Open(fname)
 		if err != nil {
-			return fmt.Errorf("Cannot ope file:%w", err)
+			return fmt.Errorf("cannot open file:%w", err)
 		}
 
 		//parse the csv into a slice of float64 numbers
@@ -59,4 +59,10 @@ func run(filenames []string, op string, column int, out io.Writer) error {
 		consolidate = append(consolidate, data...)
 	}
 	_, err := fmt.Fprintln(out, opFunc(consolidate))
+	return err
 }
+
+
+
+
+

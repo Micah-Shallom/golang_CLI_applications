@@ -7,8 +7,6 @@ import (
 	"strconv"
 )
 
-
-
 func sum(data []float64) float64 {
 	sum := 0.0
 	for _, v := range data {
@@ -35,16 +33,16 @@ func csv2float(r io.Reader, column int) ([]float64, error) {
 
 	allData, err := cr.ReadAll() // The method ReadAll() reads in all records (lines) from the CSV file as a slice of fields (columns), where each field is itself a slice of strings. Go represents this data structure as [][]string.
 	if err != nil {
-		return nil, fmt.Errorf("Cannot read data from file: %w", err)
+		return nil, fmt.Errorf("cannot read data from file: %w", err)
 	}
 
 	//looping through all records
-	for i, row := range allData{
+	for i, row := range allData {
 		if i == 0 {
 			continue
 		}
 		//Checking number of columns in CSV file
-		if len(row) <= column{
+		if len(row) <= column {
 			//file does not have many columns
 			return nil, fmt.Errorf("%w: File has only %d columns", ErrInvalidColumn, len(row))
 		}
