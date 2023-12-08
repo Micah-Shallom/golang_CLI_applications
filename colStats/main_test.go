@@ -3,7 +3,9 @@ package main
 import (
 	"bytes"
 	"errors"
+	"io"
 	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -65,9 +67,24 @@ func TestRun(t *testing.T) {
 			if err != nil {
 				t.Errorf("Unexpected error: %q", err)
 			}
-			if res.String() != tc.exp{
+			if res.String() != tc.exp {
 				t.Errorf("Expected %q, got %q instead", tc.exp, res.String())
 			}
 		})
 	}
+
+}
+
+func BenchmarkRun(b *testing.B) {
+	filenames, err := filepath.Glob("./testdata/benchmark/*.csv")
+	if err != nil {
+		b.Fatal(err)
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		if err := run(filenames, "avg", 2, io.Discard); err != nil {
+			b.Error(err)
+		}
+	}
+	//run benchmark using: go test -bench . -run ^$
 }
