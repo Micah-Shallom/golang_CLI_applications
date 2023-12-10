@@ -82,7 +82,7 @@ func BenchmarkRun(b *testing.B) {
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		if err := run(filenames, "avg", 2, io.Discard); err != nil {
+		if err := run(filenames, "max", 2, io.Discard); err != nil {
 			b.Error(err)
 		}
 	}

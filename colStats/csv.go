@@ -19,6 +19,25 @@ func avg(data []float64) float64 {
 	return sum(data) / float64(len(data))
 }
 
+func max(data []float64) float64{
+	maxVal := data[0]
+	for _, val := range data{
+		if val > maxVal{
+			maxVal = val
+		}
+	}
+	return maxVal
+}
+func min(data []float64) float64{
+	minVal := data[0]
+	for _, val := range data{
+		if val < minVal{
+			minVal = val
+		}
+	}
+	return minVal
+}
+
 // statsFunc define a generic statistical function
 type statsFunc func(data []float64) float64
 

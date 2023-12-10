@@ -7,6 +7,7 @@ import (
 	"io"
 	"testing"
 	"testing/iotest"
+
 )
 
 func TestOperation(t *testing.T) {
@@ -35,6 +36,36 @@ func TestOperation(t *testing.T) {
 				result := tc.op(data[k])
 				if result != exp {
 					t.Errorf("Expected %g, got %g instead", exp, result)
+				}
+			})
+		}
+	}
+}
+
+func TestMaxMinFunc(t *testing.T){
+	data := [][]float64{
+		{10, 20, 15, 30, 45, 50, 100, 30},
+		{5.5, 8, 2.2, 9.75, 8.45, 3, 2.5, 10.25, 4.75, 6.1, 7.67, 12.287, 5.47},
+		{-10, -20},
+		{102, 37, 44, 57, 67, 129},
+	}
+
+	testCases := []struct{
+		name		string
+		op			statsFunc
+		exp			[]float64
+	}{
+		{"testMax", max, []float64{100,12.287,-10,129}},
+		{"testMin", min, []float64{10,2.2,-20,37}},
+	}
+
+	for _, tc := range testCases{
+		for k , exp := range tc.exp{
+			name := fmt.Sprintf("%sData%d", tc.name, k)
+			t.Run(name, func(t *testing.T) {
+				result := tc.op(data[k]);
+				if result != exp{
+					t.Errorf("Expected %g, got %g", exp, result)
 				}
 			})
 		}

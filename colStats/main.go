@@ -11,7 +11,7 @@ import (
 
 func main() {
 	//verify and parse arguments
-	op := flag.String("op", "sum", "Operation to be executed")
+	op := flag.String("op", "sum", "Operation to be executed{sum,avg,max,min}")
 	column := flag.Int("col", 1, "CSV column on which to execute operation")
 	flag.Parse()
 
@@ -35,6 +35,10 @@ func run(filenames []string, op string, column int, out io.Writer) error {
 		opFunc = sum
 	case "avg":
 		opFunc = avg
+	case "max":
+		opFunc = max
+	case "min":
+		opFunc = min
 	default:
 		return fmt.Errorf("%w: %s", ErrInvalidOperation, op)
 	}
@@ -54,7 +58,7 @@ func run(filenames []string, op string, column int, out io.Writer) error {
 		}
 	}()
 
-	for i := 0; i < runtime.NumCPU(); i++ {
+	for i := 0; i < runtime.NumCPU(); i++ { //implementing the concept of using worker queues 
 		wg.Add(1)
 		go func ()  {
 			defer wg.Done()
