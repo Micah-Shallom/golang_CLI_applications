@@ -1,7 +1,3 @@
-Certainly! Here's an extended version of the README with more detailed descriptions:
-
----
-
 # CSV Stat Calculator
 
 A command-line tool written in Go to perform various statistical operations on CSV files, including sum, average, maximum, and minimum calculations.
@@ -69,7 +65,3 @@ We welcome contributions! If you encounter any issues or have ideas for improvem
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-Feel free to modify the content based on your project's specifics and provide additional details as needed.
