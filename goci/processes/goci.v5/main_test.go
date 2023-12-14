@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"os/exec"
+	"syscall"
 	"testing"
 )
 
@@ -25,7 +26,7 @@ func TestRun(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			if tc.setupGit{
+			if tc.setupGit {
 				setupGit(t, tc.proj)
 			}
 
@@ -47,12 +48,12 @@ func TestRun(t *testing.T) {
 			if out.String() != tc.out {
 				t.Errorf("Expected output: %q. Got %q\n", tc.out, out.String())
 			}
-			
+
 		})
 	}
 }
 
-func setupGit(t *testing.T, proj string){
+func setupGit(t *testing.T, proj string) {
 	t.Helper()
 
 	//use the LookPath() function to enquire if git is an installed package
@@ -77,5 +78,24 @@ func setupGit(t *testing.T, proj string){
 		if err := gitCmd.Run(); err != nil {
 			t.Fatal(err)
 		}
+	}
+}
+
+func TestRunKill(t *testing.T) {
+	var testCases = []struct {
+		name   string
+		proj   string
+		sig    syscall.Signal
+		expErr error
+	}{
+		{"SIGINT", "./testdata/tool", syscall.SIGINT, ErrSignal},
+		{"SIGTERM", "./testdata/tool", syscall.SIGTERM, ErrSignal},
+		{"SIGQUIT", "./testdata/tool", syscall.SIGQUIT, nil},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T){
+			
+		})
 	}
 }
