@@ -1,0 +1,4 @@
+cobra add hostsCmd -> attaches hostsCmd to rootCmd
+cobra add list -p hostsCmd -> attaches listCmd to hosstCmd
+cobra add add -p hostsCmd
+cobra add delete -p hostsCmd
