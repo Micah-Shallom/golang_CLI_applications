@@ -117,7 +117,6 @@ func TestSaveLoad(t *testing.T) {
 	}
 }
 
-
 func TestLoadNoFile(t *testing.T) {
 	tf, err := os.CreateTemp("", "")
 	if err != nil {

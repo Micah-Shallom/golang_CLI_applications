@@ -1,4 +1,5 @@
-cobra add hostsCmd -> attaches hostsCmd to rootCmd
+cobra init --pkg-name github.com/Micah-Shallom/modules/pScan //sets up rootCmd
+cobra add hosts -> attaches host via hostsCmd to rootCmd 
 cobra add list -p hostsCmd -> attaches listCmd to hosstCmd
 cobra add add -p hostsCmd
 cobra add delete -p hostsCmd
