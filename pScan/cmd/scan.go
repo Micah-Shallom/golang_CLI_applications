@@ -16,9 +16,12 @@ limitations under the License.
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/Micah-Shallom/modules/scan"
 	"github.com/spf13/cobra"
@@ -34,20 +37,57 @@ var scanCmd = &cobra.Command{
 		// if err != nil {
 		// 	return err
 		// }
-		hostsFile := viper.GetString("hosts-file")
 		ports, err := cmd.Flags().GetIntSlice("ports")
 		if err != nil {
 			return err
 		}
-		return scanAction(os.Stdout, hostsFile, ports)
+		portRange, err := cmd.Flags().GetString("portRange")
+		if err != nil {
+			return err
+		}
+		// portRange := viper.GetString("portRange")
+		// ports := viper.GetIntSlice("ports") //didnt use viper as it erases the default port setup
+		hostsFile := viper.GetString("hosts-file")
+		return scanAction(os.Stdout, hostsFile, ports, portRange)
 	},
 }
 
-func scanAction(out io.Writer, hostsFile string, ports []int) error {
+func scanAction(out io.Writer, hostsFile string, ports []int, portRange string) error {
 	hl := &scan.HostLists{}
 	if err := hl.Load(hostsFile); err != nil {
 		return err
 	}
+	
+	//disable ability to pass both ports and portRange
+	if (len(ports) > 3) && (portRange != "") {
+		flagErr := errors.New("error: Specify either ports or portRange and not both")
+		return flagErr
+	}
+	
+	//if portRange is provided loop through it and populate ports
+	if portRange != "" {
+		portStr := strings.Split(portRange, "-")
+		start, err := strconv.Atoi(portStr[0])
+		if err != nil {
+			fmt.Println("Error converting start:", err)
+			return err
+		}
+		end, err := strconv.Atoi(portStr[1])
+		if err != nil {
+			fmt.Println("Error converting end:", err)
+			return err
+		}
+		if (start >= 1 && end <= 65535) && (end > start){
+			ports = []int{}
+			for i := start; i < end; i++{
+				ports = append(ports, i)
+			}
+			}else{
+				flagErr := errors.New("error: port range should be between 1-65535 | upper port number must be greater than lower port number")
+				return flagErr
+			}
+	}
+
 	results := scan.Run(hl, ports)
 	return printResults(out, results)
 }
@@ -74,7 +114,9 @@ func printResults(out io.Writer, results []scan.Results) error {
 func init() {
 	rootCmd.AddCommand(scanCmd)
 
+	scanCmd.Flags().StringP("portRange", "r", "1-1024", "range of ports to scan")
 	scanCmd.Flags().IntSliceP("ports", "p", []int{22, 80, 443}, "ports to scan") //sets default scan command
+
 
 	// Here you will define your flags and configuration settings.
 
