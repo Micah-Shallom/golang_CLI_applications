@@ -5,7 +5,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,13 +16,14 @@ limitations under the License.
 package cmd
 
 import (
-  "fmt"
-  "os"
-  "github.com/spf13/cobra"
+	"fmt"
+	"os"
+	"strings"
 
-  homedir "github.com/mitchellh/go-homedir"
-  "github.com/spf13/viper"
+	"github.com/spf13/cobra"
 
+	homedir "github.com/mitchellh/go-homedir"
+	"github.com/spf13/viper"
 )
 
 
@@ -31,7 +32,7 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-  Use:   ".",
+  Use:   "./pScan",
   Short: "Fast TCP port scanner",
   Long: `pScan - short for Port Scanner - executes TCP port scan
   on a list of hosts.
@@ -62,6 +63,11 @@ func init() {
   rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/...yaml)")
 
   rootCmd.PersistentFlags().StringP("hosts-file","f","pScan.hosts", "pScan hosts file")
+
+  replacer := strings.NewReplacer("-","_")
+  viper.SetEnvKeyReplacer(replacer)
+  viper.SetEnvPrefix("PSCAN")
+  viper.BindPFlag("hosts-file", rootCmd.PersistentFlags().Lookup("hosts-file"))
 
 
   // Cobra also supports local flags, which will only run

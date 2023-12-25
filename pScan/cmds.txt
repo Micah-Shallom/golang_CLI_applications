@@ -3,3 +3,10 @@ cobra add hosts -> attaches host via hostsCmd to rootCmd
 cobra add list -p hostsCmd -> attaches listCmd to hosstCmd
 cobra add add -p hostsCmd
 cobra add delete -p hostsCmd
+
+using viper to make this possible 
+PSCAN_HOSTS_FILE=newFile.hosts ./pScan hosts list
+by mapping PSCAN_HOSTS_FILE to rootCmd.PersistentFlags().Lookup("hosts-file")
+
+hosts-file: newFile.hosts //In config.yaml file
+./pScan hosts list --config config.yaml

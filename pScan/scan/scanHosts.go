@@ -29,7 +29,7 @@ func scanPort(host string, port int) PortState {
 		//we didnt have to provide the value of Open as the zero value of a boolean is false
 	}
 
-	address := net.JoinHostPort(host, fmt.Sprintf("%d", port))//used insteead of concatenating strings in order to cater for a case of an ipV6 host address
+	address := net.JoinHostPort(host, fmt.Sprintf("%d", port))//used instead of concatenating strings in order to cater for a case of an ipV6 host address
 
 	scanConn, err := net.DialTimeout("tcp", address, 1*time.Second)
 	if err != nil {

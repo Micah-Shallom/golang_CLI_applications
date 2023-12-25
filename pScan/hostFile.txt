@@ -1,3 +1,13 @@
+host01
+host02
+host03
+host04
+host05
+host06
+host07
+host08
+host09
 localhost
 myHost
 nginx
+apache

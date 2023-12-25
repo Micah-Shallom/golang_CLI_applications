@@ -22,6 +22,7 @@ import (
 
 	"github.com/Micah-Shallom/modules/scan"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // scanCmd represents the scan command
@@ -29,10 +30,11 @@ var scanCmd = &cobra.Command{
 	Use:   "scan",
 	Short: "Run a port scan on the hosts",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		hostsFile, err := cmd.Flags().GetString("hosts-file")
-		if err != nil {
-			return err
-		}
+		// hostsFile, err := cmd.Flags().GetString("hosts-file")
+		// if err != nil {
+		// 	return err
+		// }
+		hostsFile := viper.GetString("hosts-file")
 		ports, err := cmd.Flags().GetIntSlice("ports")
 		if err != nil {
 			return err
@@ -60,7 +62,7 @@ func printResults(out io.Writer, results []scan.Results) error {
 			continue
 		}
 		message += fmt.Sprintln()
-		for _, port := range result.PortStates{
+		for _, port := range result.PortStates {
 			message += fmt.Sprintf("\t%d: %s\n", port.Port, port.Open)
 		}
 		message += fmt.Sprintln()
@@ -72,7 +74,7 @@ func printResults(out io.Writer, results []scan.Results) error {
 func init() {
 	rootCmd.AddCommand(scanCmd)
 
-	scanCmd.Flags().IntSliceP("ports", "p", []int{22, 80, 443}, "ports to scan")
+	scanCmd.Flags().IntSliceP("ports", "p", []int{22, 80, 443}, "ports to scan") //sets default scan command
 
 	// Here you will define your flags and configuration settings.
 

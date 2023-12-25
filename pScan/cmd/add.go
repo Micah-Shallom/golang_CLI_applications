@@ -22,6 +22,7 @@ import (
 
 	"github.com/Micah-Shallom/modules/scan"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // addCmd represents the add command
@@ -31,16 +32,19 @@ var addCmd = &cobra.Command{
 	Short:   "add new host to list",
 	Args:    cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		hostsFile, err := cmd.Flags().GetString("hosts-file")
-		if err != nil {
-			return err
-		}
+		// hostsFile, err := cmd.Flags().GetString("hosts-file")
+		// if err != nil {
+		// 	return err
+		// }
+
+		hostsFile := viper.GetString("hosts-file")
 		return addAction(os.Stdout, hostsFile, args)
 	},
 	SilenceUsage: true,
 }
 
 func addAction(out io.Writer, hostsFile string, args []string) error {
+	fmt.Println(args)
 	hl := &scan.HostLists{}
 
 	if err := hl.Load(hostsFile); err != nil {

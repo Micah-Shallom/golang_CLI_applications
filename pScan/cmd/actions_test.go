@@ -132,7 +132,7 @@ func TestIntegration(t *testing.T) {
 	expectedOut += fmt.Sprintln()
 
 	for _, v := range hostsEnd {
-		expectedOut += fmt.Sprintf("%s: Host not found\n", v)
+		expectedOut += fmt.Sprintf("%s:Host not found\n", v)
 		expectedOut += fmt.Sprintln()
 	}
 
@@ -199,7 +199,7 @@ func TestScanAction(t *testing.T) {
 	expectedOut += fmt.Sprintf("\t%d: open\n", ports[0])
 	expectedOut += fmt.Sprintf("\t%d: closed\n", ports[1])
 	expectedOut += fmt.Sprintln()
-	expectedOut += fmt.Sprintln("unknownhostoutthere: Host not found")
+	expectedOut += fmt.Sprintln("unknownhostoutthere:Host not found")
 	expectedOut += fmt.Sprintln()
 
 	//define var to capture scan output
