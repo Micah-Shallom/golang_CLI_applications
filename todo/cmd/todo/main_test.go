@@ -9,7 +9,7 @@ import (
 	"runtime"
 	"testing"
 
-	todo "github.com/Micah-Shallom/modules"
+	todo "github.com/Micah-Shallom/golang_CLI_applications/todo"
 )
 
 var (
