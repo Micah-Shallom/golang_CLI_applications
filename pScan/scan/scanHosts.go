@@ -8,7 +8,8 @@ import (
 
 type PortState struct {
 	Port int
-	Open state
+	TCPOpen state
+	UDPOpen state
 }
 
 type state bool
@@ -17,7 +18,7 @@ type state bool
 
 func (s state) String() string {
 	if s {
-		return "open"
+		return "opened"
 	}
 	return "closed"
 }
@@ -31,12 +32,22 @@ func scanPort(host string, port int) PortState {
 
 	address := net.JoinHostPort(host, fmt.Sprintf("%d", port))//used instead of concatenating strings in order to cater for a case of an ipV6 host address
 
-	scanConn, err := net.DialTimeout("tcp", address, 1*time.Second)
+	//tcp connection to host address
+	tcpConn, err := net.DialTimeout("tcp", address, 1*time.Second)
 	if err != nil {
 		return p
 	}
-	scanConn.Close()
-	p.Open = true
+	tcpConn.Close()
+	p.TCPOpen = true
+
+	//udp connection to host address
+	udpConn, err := net.DialTimeout("udp", address, 1*time.Second)
+	if err != nil {
+		return p
+	}
+	udpConn.Close()
+	p.UDPOpen = true
+	fmt.Println(p)
 	return p
 }
 
