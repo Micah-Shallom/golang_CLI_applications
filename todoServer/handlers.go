@@ -13,7 +13,7 @@ import (
 
 var (
 	ErrNotFound    = errors.New("not found")
-	ErrInvalidData = errors.New("invalide data")
+	ErrInvalidData = errors.New("invalid data")
 )
 
 func rootHandler(w http.ResponseWriter, r *http.Request) {
@@ -115,12 +115,15 @@ func addHandler(w http.ResponseWriter, r *http.Request, list *todo.List, todoFil
 	item := struct {
 		Task string `json:"task"`
 	}{}
+
 	if err := json.NewDecoder(r.Body).Decode(&item); err != nil {
 		message := fmt.Sprintf("Invalid Json:%s", err)
 		replyError(w, r, http.StatusInternalServerError, message)
 		return
 	}
+
 	list.Add(item.Task)
+
 	if err := list.Save(todoFile); err != nil {
 		replyError(w, r, http.StatusInternalServerError, err.Error())
 		return
