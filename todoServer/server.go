@@ -5,9 +5,17 @@ import (
 	"log"
 	"net/http"
 	"sync"
+
+	"github.com/gorilla/handlers"
 )
 
 func newMux(todoFile string) http.Handler {
+	corsHandler := handlers.CORS(
+		handlers.AllowedOrigins([]string{"*"}), // Set your allowed origins here
+		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"}),
+		handlers.AllowedHeaders([]string{"Content-Type"}),
+	)
+
 	m := http.NewServeMux()
 	mu := &sync.Mutex{}
 
@@ -16,7 +24,7 @@ func newMux(todoFile string) http.Handler {
 	m.Handle("/todo", http.StripPrefix("/todo", t))
 	m.Handle("/todo/", http.StripPrefix("/todo/", t))
 
-	return m
+	return corsHandler(m)
 }
 
 func replyTextContent(w http.ResponseWriter, r *http.Request, status int, content string) {
