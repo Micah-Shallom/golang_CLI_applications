@@ -132,8 +132,7 @@ func main() {
 
 }
 
-//getTask function decides where to get the decsripton for a new task from: argument or STDIN
-
+//getTask function decides where to get the decsription for a new task from: argument or STDIN
 func getTask(r io.Reader, args ...string) (string, error) {
 	if len(args) > 0 {
 		return strings.Join(args, " "), nil

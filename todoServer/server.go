@@ -11,7 +11,7 @@ import (
 
 func newMux(todoFile string) http.Handler {
 	corsHandler := handlers.CORS(
-		handlers.AllowedOrigins([]string{"*"}), // Set your allowed origins here
+		handlers.AllowedOrigins([]string{"0.0.0.0/0"}), // Set your allowed origins here
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"}),
 		handlers.AllowedHeaders([]string{"Content-Type"}),
 	)
