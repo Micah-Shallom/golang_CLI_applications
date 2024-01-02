@@ -134,134 +134,134 @@ func TestGet(t *testing.T) {
 	}
 }
 
-// func TestAdd(t *testing.T) {
-// 	url, cleanup := setupAPI(t)
-// 	defer cleanup()
+func TestAdd(t *testing.T) {
+	url, cleanup := setupAPI(t)
+	defer cleanup()
 
-// 	taskName := "Task number 3."
-// 	t.Run("Add", func(t *testing.T) {
-// 		var body bytes.Buffer
-// 		item := struct {
-// 			Task string `json:"task"`
-// 		}{
-// 			Task: taskName,
-// 		}
-// 		if err := json.NewEncoder(&body).Encode(item); err != nil {
-// 			t.Fatal(err)
-// 		}
-// 		r, err := http.Post(url+"/todo", "application/json", &body)
-// 		if err != nil {
-// 			t.Fatal(err)
-// 		}
-// 		if r.StatusCode != http.StatusCreated {
-// 			t.Errorf("Expected %q, got %q.", http.StatusText(http.StatusCreated), http.StatusText(r.StatusCode))
-// 		}
-// 	})
+	taskName := "Task number 3."
+	t.Run("Add", func(t *testing.T) {
+		var body bytes.Buffer
+		item := struct {
+			Task string `json:"task"`
+		}{
+			Task: taskName,
+		}
+		if err := json.NewEncoder(&body).Encode(item); err != nil {
+			t.Fatal(err)
+		}
+		r, err := http.Post(url+"/todo", "application/json", &body)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if r.StatusCode != http.StatusCreated {
+			t.Errorf("Expected %q, got %q.", http.StatusText(http.StatusCreated), http.StatusText(r.StatusCode))
+		}
+	})
 
-// 	t.Run("CheckAdd", func(t *testing.T) {
-// 		r, err := http.Get(url + "/todo/3")
-// 		if err != nil {
-// 			t.Error(err)
-// 		}
-// 		if r.StatusCode != http.StatusOK {
-// 			t.Fatalf("Expected %q, got %q.", http.StatusText(http.StatusOK), http.StatusText(r.StatusCode))
-// 		}
+	t.Run("CheckAdd", func(t *testing.T) {
+		r, err := http.Get(url + "/todo/3")
+		if err != nil {
+			t.Error(err)
+		}
+		if r.StatusCode != http.StatusOK {
+			t.Fatalf("Expected %q, got %q.", http.StatusText(http.StatusOK), http.StatusText(r.StatusCode))
+		}
 
-// 		var resp todoResponse
-// 		if err := json.NewDecoder(r.Body).Decode(&resp); err != nil {
-// 			t.Fatal(err)
-// 		}
-// 		r.Body.Close()
+		var resp todoResponse
+		if err := json.NewDecoder(r.Body).Decode(&resp); err != nil {
+			t.Fatal(err)
+		}
+		r.Body.Close()
 
-// 		if resp.Results[0].Task != taskName {
-// 			t.Errorf("Exxpected %q, got %q.", taskName, resp.Results[0].Task)
-// 		}
-// 	})
-// }
+		if resp.Results[0].Task != taskName {
+			t.Errorf("Exxpected %q, got %q.", taskName, resp.Results[0].Task)
+		}
+	})
+}
 
-// func TestDelete(t *testing.T) {
-// 	url, cleanup := setupAPI(t)
-// 	defer cleanup()
+func TestDelete(t *testing.T) {
+	url, cleanup := setupAPI(t)
+	defer cleanup()
 
-// 	t.Run("Delete", func(t *testing.T) {
-// 		u := fmt.Sprintf("%s/todo/1", url)
-// 		req, err := http.NewRequest(http.MethodDelete, u, nil)
-// 		if err != nil {
-// 			t.Fatal(err)
-// 		}
-// 		r, err := http.DefaultClient.Do(req)
-// 		if err != nil {
-// 			t.Error(err)
-// 		}
-// 		if r.StatusCode != http.StatusNoContent {
-// 			t.Fatalf("Expected %q, got %q.", http.StatusText(http.StatusNoContent), http.StatusText(r.StatusCode))
-// 		}
-// 	})
+	t.Run("Delete", func(t *testing.T) {
+		u := fmt.Sprintf("%s/todo/1", url)
+		req, err := http.NewRequest(http.MethodDelete, u, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		r, err := http.DefaultClient.Do(req)
+		if err != nil {
+			t.Error(err)
+		}
+		if r.StatusCode != http.StatusNoContent {
+			t.Fatalf("Expected %q, got %q.", http.StatusText(http.StatusNoContent), http.StatusText(r.StatusCode))
+		}
+	})
 
-// 	t.Run("CheckDelete", func(t *testing.T) {
-// 		r, err := http.Get(url + "/todo")
-// 		if err != nil {
-// 			t.Error(err)
-// 		}
-// 		if r.StatusCode != http.StatusOK {
-// 			t.Fatalf("Expected %q, got %q.", http.StatusText(http.StatusOK), http.StatusText(r.StatusCode))
-// 		}
+	t.Run("CheckDelete", func(t *testing.T) {
+		r, err := http.Get(url + "/todo")
+		if err != nil {
+			t.Error(err)
+		}
+		if r.StatusCode != http.StatusOK {
+			t.Fatalf("Expected %q, got %q.", http.StatusText(http.StatusOK), http.StatusText(r.StatusCode))
+		}
 
-// 		var resp todoResponse
-// 		if err := json.NewDecoder(r.Body).Decode(&resp); err != nil {
-// 			t.Fatal(err)
-// 		}
-// 		r.Body.Close()
-// 		if len(resp.Results) != 1 {
-// 			t.Errorf("Expected 1 item, got %d.", len(resp.Results))
-// 		}
-// 		expTask := "Task number 2."
-// 		if resp.Results[0].Task != expTask {
-// 			t.Errorf("Expected %q, got %q.", expTask, resp.Results[0].Task)
-// 		}
-// 	})
-// }
+		var resp todoResponse
+		if err := json.NewDecoder(r.Body).Decode(&resp); err != nil {
+			t.Fatal(err)
+		}
+		r.Body.Close()
+		if len(resp.Results) != 1 {
+			t.Errorf("Expected 1 item, got %d.", len(resp.Results))
+		}
+		expTask := "Task number 2."
+		if resp.Results[0].Task != expTask {
+			t.Errorf("Expected %q, got %q.", expTask, resp.Results[0].Task)
+		}
+	})
+}
 
-// func TestComplete(t *testing.T) {
-// 	url, cleanup := setupAPI(t)
-// 	defer cleanup()
-// 	t.Run("Complete", func(t *testing.T) {
-// 		u := fmt.Sprintf("%s/todo/1?complete", url)
-// 		req, err := http.NewRequest(http.MethodPatch, u, nil)
-// 		if err != nil {
-// 			t.Fatal(err)
-// 		}
-// 		r, err := http.DefaultClient.Do(req)
-// 		if err != nil {
-// 			t.Error(err)
-// 		}
-// 		if r.StatusCode != http.StatusNoContent {
-// 			t.Fatalf("Expected %q, got %q.",
-// 				http.StatusText(http.StatusNoContent), http.StatusText(r.StatusCode))
-// 		}
-// 		t.Run("CheckComplete", func(t *testing.T) {
-// 			r, err := http.Get(url + "/todo")
-// 			if err != nil {
-// 				t.Error(err)
-// 			}
-// 			if r.StatusCode != http.StatusOK {
-// 				t.Fatalf("Expected %q, got %q.",
-// 					http.StatusText(http.StatusOK), http.StatusText(r.StatusCode))
-// 			}
-// 			var resp todoResponse
-// 			if err := json.NewDecoder(r.Body).Decode(&resp); err != nil {
-// 				t.Fatal(err)
-// 			}
-// 			r.Body.Close()
-// 			if len(resp.Results) != 2 {
-// 				t.Errorf("Expected 2 items, got %d.", len(resp.Results))
-// 			}
-// 			if !resp.Results[0].Done {
-// 				t.Error("Expected Item 1 to be completed")
-// 			}
-// 			if resp.Results[1].Done {
-// 				t.Error("Expected Item 2 not to be completed")
-// 			}
-// 		})
-// 	})
-// }
+func TestComplete(t *testing.T) {
+	url, cleanup := setupAPI(t)
+	defer cleanup()
+	t.Run("Complete", func(t *testing.T) {
+		u := fmt.Sprintf("%s/todo/1?complete", url)
+		req, err := http.NewRequest(http.MethodPatch, u, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		r, err := http.DefaultClient.Do(req)
+		if err != nil {
+			t.Error(err)
+		}
+		if r.StatusCode != http.StatusNoContent {
+			t.Fatalf("Expected %q, got %q.",
+				http.StatusText(http.StatusNoContent), http.StatusText(r.StatusCode))
+		}
+		t.Run("CheckComplete", func(t *testing.T) {
+			r, err := http.Get(url + "/todo")
+			if err != nil {
+				t.Error(err)
+			}
+			if r.StatusCode != http.StatusOK {
+				t.Fatalf("Expected %q, got %q.",
+					http.StatusText(http.StatusOK), http.StatusText(r.StatusCode))
+			}
+			var resp todoResponse
+			if err := json.NewDecoder(r.Body).Decode(&resp); err != nil {
+				t.Fatal(err)
+			}
+			r.Body.Close()
+			if len(resp.Results) != 2 {
+				t.Errorf("Expected 2 items, got %d.", len(resp.Results))
+			}
+			if !resp.Results[0].Done {
+				t.Error("Expected Item 1 to be completed")
+			}
+			if resp.Results[1].Done {
+				t.Error("Expected Item 2 not to be completed")
+			}
+		})
+	})
+}

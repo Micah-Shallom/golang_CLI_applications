@@ -4,17 +4,14 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+
 	"os"
 	"time"
-
 )
 
 func main() {
-	// Wrap the mux with CORS handling
-	
-
 	host := flag.String("h", "localhost", "Server Host")
-	port := flag.Int("p", 1000, "Server Port")
+	port := flag.Int("p", 8080, "Server Port")
 	todoFile := flag.String("f", "todoServer.json", "todo JSON file")
 	flag.Parse()
 
@@ -26,7 +23,10 @@ func main() {
 		WriteTimeout: 10 * time.Second,
 	}
 
-	fmt.Print("Server running")
+	// testList := todo.List{}
+	// testList.Get("./todo.json")
+	// fmt.Println(testList)
+	fmt.Printf("Server running on port %d", *port)
 	if err := s.ListenAndServe(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

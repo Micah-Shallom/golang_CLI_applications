@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+const timeFormat = "Jan/02 @15:04"
+
 type item struct {
 	Task        string
 	Done        bool
@@ -31,13 +33,13 @@ func newClient() *http.Client {
 func getItems(url string) ([]item, error) {
 	r, err := newClient().Get(url)
 	if err != nil {
-		return nil, fmt.Errorf("%w:%s", ErrConnection)
+		return nil, fmt.Errorf("%w:%s", ErrConnection,err)
 	}
 	defer r.Body.Close()
 	if r.StatusCode != http.StatusOK {
 		msg, err := io.ReadAll(r.Body)
 		if err != nil {
-			return nil, fmt.Errorf("Cannot read body: %w", err)
+			return nil, fmt.Errorf("cannot read body: %w", err)
 		}
 		err = ErrInvalidResponse
 		if r.StatusCode == http.StatusNotFound {
@@ -60,3 +62,16 @@ func getAll(apiRoot string)([]item, error){
 	u := fmt.Sprintf("%s/todo", apiRoot)
 	return getItems(u)
 }
+
+func getOne(apiRoot string, id int) (item,error){
+	u := fmt.Sprintf("%s/todo/%d",apiRoot,id)
+	items, err := getItems(u)
+	if err != nil {
+		return item{}, err
+	}
+	if len(items) != 1 {
+		return item{}, fmt.Errorf("%w: Invalid results", ErrInvalid)
+	}
+	return items[0], nil 
+}
+

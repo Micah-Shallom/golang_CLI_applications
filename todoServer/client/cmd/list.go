@@ -52,7 +52,7 @@ func printAll(out io.Writer, items []item) error {
 			if v.Done {
 				done = "X"
 			}
-			fmt.Fprintf(w, "%s\t%d\t%s\t\n",done, k+1, v)
+			fmt.Fprintf(w, "%s\t%d\t%s\t\n",done, k+1, v.Task)
 		}
 	return w.Flush()
 	}
