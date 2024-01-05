@@ -49,7 +49,7 @@ var testResp = map[string]struct {
 		Status: http.StatusOK,
 		Body: `{
 "results": [],
-"date": 1572265440,
+"date": 1575422640,
 "total_results": 0
 }`,
 	},
@@ -60,8 +60,10 @@ var testResp = map[string]struct {
 	"notFound": {},
 }
 
+
 func mockServer(h http.HandlerFunc) (string, func()) {
 	ts := httptest.NewServer(h)
+	
 	return ts.URL, func ()  {
 		ts.Close()
 	}

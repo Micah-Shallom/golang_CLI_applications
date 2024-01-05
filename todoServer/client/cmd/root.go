@@ -55,7 +55,7 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.client.yaml)")
 
-	rootCmd.PersistentFlags().String("api-root", "http://localhost:8080", "Todo API URL")
+	rootCmd.PersistentFlags().String("api-root", "http://localhost:8080/", "Todo API URL")
 
 	replacer := strings.NewReplacer("-", "_")
 	viper.SetEnvKeyReplacer(replacer)

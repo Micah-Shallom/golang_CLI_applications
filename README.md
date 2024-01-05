@@ -1,48 +1,84 @@
-## golang_CLI_applications
+# Command-Line Applications with Cobra and Viper
 
-This repository contains implementations of various command-line applications written in Go. The primary purpose is to learn and practice Go development, focusing on building text-based user interfaces.
+Welcome to the repository containing a collection of command-line applications developed using Go, Cobra, and Viper. This project explores various aspects of command-line tool development, covering a wide range of functionalities and advanced features.
 
-**What you'll find:**
+## Table of Contents
 
-* A collection of different CLI applications showcasing diverse functionalities and purposes.
-* Code examples demonstrating the use of Go for text-based user interaction.
-* A platform for experimenting and exploring Go development capabilities.
+- [Command-Line Applications with Cobra and Viper](#command-line-applications-with-cobra-and-viper)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [Projects](#projects)
+  - [Getting Started](#getting-started)
+  - [Technologies Used](#technologies-used)
+  - [Contributing](#contributing)
+  - [License](#license)
 
-**Current projects:**
+## Introduction
 
-**1. File System Crawler:**
-* Crawls through a directory and outputs information about files and subdirectories.
-* Demonstrates file system navigation and data processing in Go.
+This repository showcases a series of command-line applications built with Go programming language, emphasizing the use of the Cobra CLI framework for command-line interaction and Viper for configuration management. Each project in this collection addresses different aspects of command-line tool development, providing practical examples and insights into various Go programming concepts.
 
-**2. Text Editor:**
-* Provides basic text editing functionalities within the terminal.
-* Explores text input handling and file manipulation techniques in Go.
+## Projects
 
-**3. Archive Creator:**
-* Creates compressed archives of files and directories.
-* Introduces concepts like file compression and archive management in Go.
+1. [Word Counter]("./wordcounter") 
+   - Basic implementation of a word counter.
+   - Addition of features, exploration of testing, and building for different platforms.
 
-**These are just a few of the projects currently in development. More applications will be added over time.**
+2. [To-Do List Manager]("./todoServer") 
+   - Command-line tool for managing lists of to-do items.
+   - Input from STDIN, parsing command-line parameters, and defining flags.
+   - Utilizing environment variables for increased flexibility.
 
-**Getting started:**
+3. [Markdown File Previewer]("./markdown_previewer") 
+   - Tool to preview Markdown files using a web browser.
+   - Handling file paths, using temporary files, and applying file templates.
+   - Implementation of Go interfaces for code flexibility.
 
-1. **Clone the repository:**
-```
-git clone https://github.com/Micah-Shallom/golang_CLI_applications.git
-```
-2. **Navigate to a project directory:**
-```
-cd <project_name>
-```
-3. **Review the project code and README files:**
-Each project may have its own specific instructions and dependencies.
-4. **Build and run the application:**
-Follow the instructions provided within each project directory.
+4. [File System Navigator]("./file_system_crawler") 
+   - CLI application to find, delete, and back up files.
+   - Common file system operations, logging, and table-driven testing.
 
-**Contributing:**
+5. [CSV Data Processor]("./colStats") 
+   - Command-line tool processing data from CSV files.
+   - Benchmarking, profiling, and tracing for performance analysis.
+   - Concurrent processing with goroutines and channels.
 
-Feel free to fork this repository, contribute code to existing projects, or create your own CLI applications using Go. Share your contributions back to the community by creating pull requests.
+6. [Network Tool with Cobra]("./pScan") 
+   - Network tool executing a TCP port scan on remote machines.
+   - Utilizing the Cobra CLI framework for flexible subcommands.
 
-**Disclaimer:**
+8. [REST API Client]("./todoServer") 
+   - Enhancing a to-do application with a REST API.
+   - Developing a command-line client for API interaction and testing.
 
-This repository primarily serves as a learning platform and may contain incomplete or experimental code. While some projects may offer useful functionalities, they are not intended for production use.
+
+## Getting Started
+
+To get started with any of the projects, follow the instructions provided in each project's directory. Ensure you have Go (version 1.x) installed on your machine.
+
+1. Clone the repository:
+
+    ```bash
+    git clone https://github.com/Micah-Shallom/golang_cli_applications.git
+    ```
+
+2. Navigate to the project directory:
+
+    ```bash
+    cd golang_cli_applications/project_directory
+    ```
+
+3. Follow the specific project's README for detailed instructions on running and testing the application.
+
+## Technologies Used
+
+- Go (Official Go Website)
+- Cobra CLI Framework
+- Viper Configuration Management
+
+## Contributing
+
+If you'd like to contribute to this project, feel free to fork the repository and submit pull requests. Contributions, suggestions, and improvements are welcome!
+
+## License
+
+This project is licensed under the [MIT License](LICENSE). Feel free to use, modify, and distribute the code for your own purposes.
