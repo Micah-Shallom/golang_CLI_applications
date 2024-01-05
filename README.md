@@ -19,34 +19,34 @@ This repository showcases a series of command-line applications built with Go pr
 
 ## Projects
 
-1. [Word Counter]("./wordcounter") 
+1. [Word Counter](./wordcounter) 
    - Basic implementation of a word counter.
    - Addition of features, exploration of testing, and building for different platforms.
 
-2. [To-Do List Manager]("./todoServer") 
+2. [To-Do List Manager](./todoServer) 
    - Command-line tool for managing lists of to-do items.
    - Input from STDIN, parsing command-line parameters, and defining flags.
    - Utilizing environment variables for increased flexibility.
 
-3. [Markdown File Previewer]("./markdown_previewer") 
+3. [Markdown File Previewer](./markdown_previewer) 
    - Tool to preview Markdown files using a web browser.
    - Handling file paths, using temporary files, and applying file templates.
    - Implementation of Go interfaces for code flexibility.
 
-4. [File System Navigator]("./file_system_crawler") 
+4. [File System Navigator](./file_system_crawler) 
    - CLI application to find, delete, and back up files.
    - Common file system operations, logging, and table-driven testing.
 
-5. [CSV Data Processor]("./colStats") 
+5. [CSV Data Processor](./colStats) 
    - Command-line tool processing data from CSV files.
    - Benchmarking, profiling, and tracing for performance analysis.
    - Concurrent processing with goroutines and channels.
 
-6. [Network Tool with Cobra]("./pScan") 
+6. [Network Tool with Cobra](./pScan) 
    - Network tool executing a TCP port scan on remote machines.
    - Utilizing the Cobra CLI framework for flexible subcommands.
 
-8. [REST API Client]("./todoServer") 
+8. [REST API Client](./todoServer) 
    - Enhancing a to-do application with a REST API.
    - Developing a command-line client for API interaction and testing.
 
