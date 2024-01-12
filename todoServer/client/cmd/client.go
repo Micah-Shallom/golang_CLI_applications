@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -33,7 +34,7 @@ func newClient() *http.Client {
 func getItems(url string) ([]item, error) {
 	r, err := newClient().Get(url)
 	if err != nil {
-		return nil, fmt.Errorf("%w:%s", ErrConnection,err)
+		return nil, fmt.Errorf("%w:%s", ErrConnection, err)
 	}
 	defer r.Body.Close()
 	if r.StatusCode != http.StatusOK {
@@ -58,13 +59,13 @@ func getItems(url string) ([]item, error) {
 	return resp.Results, nil
 }
 
-func getAll(apiRoot string)([]item, error){
+func getAll(apiRoot string) ([]item, error) {
 	u := fmt.Sprintf("%s/todo", apiRoot)
 	return getItems(u)
 }
 
-func getOne(apiRoot string, id int) (item,error){
-	u := fmt.Sprintf("%s/todo/%d",apiRoot,id)
+func getOne(apiRoot string, id int) (item, error) {
+	u := fmt.Sprintf("%s/todo/%d", apiRoot, id)
 	items, err := getItems(u)
 	if err != nil {
 		return item{}, err
@@ -72,6 +73,52 @@ func getOne(apiRoot string, id int) (item,error){
 	if len(items) != 1 {
 		return item{}, fmt.Errorf("%w: Invalid results", ErrInvalid)
 	}
-	return items[0], nil 
+	return items[0], nil
 }
 
+func sendRequest(url, method, contentType string, expStatus int, body io.Reader) error {
+	req, err := http.NewRequest(method, url, body)
+	if err != nil {
+		return err
+	}
+	if contentType != "" {
+		req.Header.Set("Content-Type", contentType)
+	}
+	r, err := newClient().Do(req)
+	if err != nil {
+		return err
+	}
+	defer r.Body.Close()
+	// if r.StatusCode == http.StatusOK {
+	// 	r.StatusCode = expStatus
+	// }
+	if r.StatusCode != expStatus {
+		_, err := io.ReadAll(r.Body)
+		if err != nil {
+			return fmt.Errorf("cannot read body: %w", err)
+		}
+		// fmt.Println(string(msg), r.StatusCode, expStatus)
+		if r.StatusCode == http.StatusNotFound {
+			err = ErrNotFound
+		}
+		return fmt.Errorf("%s", err)
+	}
+	return nil
+}
+
+func addItem(apiRoot, task string) error {
+	u := fmt.Sprintf("%s/todo", apiRoot)
+	item := struct {
+		Task string `json:"task"`
+	}{
+		Task: task,
+	}
+
+	var body bytes.Buffer
+
+	if err := json.NewEncoder(&body).Encode(item); err != nil {
+		return err
+	}
+
+	return sendRequest(u, http.MethodPost, "application/json", http.StatusCreated, &body)
+}

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"testing"
 )
@@ -82,7 +83,7 @@ func TestViewAction(t *testing.T) {
 	}{
 		// {name: "ResultsOne",
 		// 	expError: nil,
-		// 	expOut: 
+		// 	expOut:
 		// 	`Task: Task 1
 		// 	 Created at: Oct/28 @08:23
 		// 	 Completed: No`,
@@ -117,7 +118,7 @@ func TestViewAction(t *testing.T) {
 				if err == nil {
 					t.Fatalf("Expected error %q, got no error.", tc.expError)
 				}
-				if !errors.Is(err, tc.expError){
+				if !errors.Is(err, tc.expError) {
 					t.Errorf("Expected error %q, got %q.", tc.expError, err)
 				}
 				return
@@ -129,5 +130,49 @@ func TestViewAction(t *testing.T) {
 				t.Errorf("Expected output %q, got %q", tc.expOut, out.String())
 			}
 		})
+	}
+}
+
+func TestAddAction(t *testing.T) {
+	expURLPath := "/todo"
+	expMethod := http.MethodPost
+	expBody := "{\"task\":\"Task 1\"}\n"
+	expContentType := "application/json"
+	expOut := "Added task \"Task 1\" to the list.\n"
+	args := []string{"Task", "1"}
+
+	url, cleanup := mockServer(
+		func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Path != expURLPath {
+				t.Errorf("Expected path %q, got %q", expURLPath, r.URL.Path)
+			}
+			if r.Method != expMethod {
+				t.Errorf("Expected method %q, got %q", expMethod, r.Method)
+			}
+			body, err := io.ReadAll(r.Body)
+			if err != nil {
+				t.Fatal(err)
+			}
+			r.Body.Close()
+			if string(body) != expBody {
+				t.Errorf("Expected body %q, got %q", expBody, string(body))
+			}
+			contentType := r.Header.Get("Content-Type")
+			if contentType != expContentType {
+				t.Errorf("Expected Content-Type %q, got %q", expContentType, contentType)
+			}
+			w.WriteHeader(testResp["created"].Status)
+			fmt.Fprintln(w, testResp["created"].Body)
+		},
+	)
+	defer cleanup()
+
+	var out bytes.Buffer
+
+	if err := addAction(&out, url, args); err != nil {
+		t.Fatalf("Expected no error, got %q.", err)
+	}
+	if expOut != out.String() {
+		t.Errorf("Expected output %q, got %q", expOut, out.String())
 	}
 }
