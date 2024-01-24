@@ -28,6 +28,15 @@ import (
 	"github.com/spf13/viper"
 )
 
+// type attribute struct {
+// 	out            os.File
+// 	hostFile       string
+// 	ports          []int
+// 	portRange      string
+// 	isPortSet      bool
+// 	isPortRangeSet bool
+// }
+
 // scanCmd represents the scan command
 var scanCmd = &cobra.Command{
 	Use:   "scan",
@@ -37,6 +46,7 @@ var scanCmd = &cobra.Command{
 		// if err != nil {
 		// 	return err
 		// }
+
 		ports, err := cmd.Flags().GetIntSlice("ports")
 		if err != nil {
 			return err
@@ -45,31 +55,57 @@ var scanCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		filter, err := cmd.Flags().GetString("filter")
-		if err != nil {
-			return err
-		}
+
+		//checks if port and/or portrange is set
+		isPortSet := cmd.Flags().Changed("ports")
+		isPRangeSet := cmd.Flags().Changed("portRange")
+
 		// portRange := viper.GetString("portRange")
 		// ports := viper.GetIntSlice("ports") //didnt use viper as it erases the default port setup
 		hostsFile := viper.GetString("hosts-file")
-		return scanAction(os.Stdout, hostsFile, ports, portRange,filter)
+
+		// p := attribute{
+		// 	out: *os.Stdout,
+		// 	hostFile: hostsFile,
+		// 	ports: ports,
+		// 	portRange: portRange,
+		// 	isPortSet: isPortSet,
+		// 	isPortRangeSet: isPRangeSet,
+		// }
+
+		return scanAction(os.Stdout, hostsFile, ports, portRange, isPortSet, isPRangeSet)
 	},
 }
 
-func scanAction(out io.Writer, hostsFile string, ports []int, portRange string, filter string) error {
+func scanAction(out io.Writer, hostsFile string, ports []int, portRange string, ip, ipr bool) error {
 	hl := &scan.HostLists{}
 	if err := hl.Load(hostsFile); err != nil {
 		return err
 	}
+	fmt.Fprintln(os.Stdout, ip, ipr)
 
 	//disable ability to pass both ports and portRange
-	if (len(ports) > 3) && (portRange != "") {
+	if ip && ipr {
 		flagErr := errors.New("error: Specify either ports or portRange and not both")
 		return flagErr
 	}
 
-	//if portRange is provided loop through it and populate ports
-	if portRange != "" {
+	var results []scan.Results
+
+	//if port and portrange is set, scan ports
+	if !ip && !ipr {
+		results = scan.Run(hl, ports)
+		return printResults(out, results)
+	}
+
+	//if port is set and ipr is not..scan ip ports
+	if ip {
+		results = scan.Run(hl, ports)
+		return printResults(out, results)
+	}
+
+	// if portRange is provided loop through it and populate ports
+	if !ip && ipr {
 		portStr := strings.Split(portRange, "-")
 		start, err := strconv.Atoi(portStr[0])
 		if err != nil {
@@ -82,21 +118,21 @@ func scanAction(out io.Writer, hostsFile string, ports []int, portRange string, 
 			return err
 		}
 		if (start >= 1 && end <= 65535) && (end > start) {
-			ports = []int{}
-			for i := start; i < end; i++ {
-				ports = append(ports, i)
+			rangeports := []int{}
+			for i := start; i <= end; i++ {
+				rangeports = append(rangeports, i)
 			}
+			results = scan.Run(hl, rangeports)
+			return printResults(out, results)
 		} else {
 			flagErr := errors.New("error: port range should be between 1-65535 | upper port number must be greater than lower port number")
 			return flagErr
 		}
 	}
-
-	results := scan.Run(hl, ports)
-	return printResults(out, results, filter)
+	return nil
 }
 
-func printResults(out io.Writer, results []scan.Results, filter string) error {
+func printResults(out io.Writer, results []scan.Results) error {
 	message := ""
 	for _, result := range results {
 		message += fmt.Sprintf("%s:", result.Host)
@@ -108,18 +144,14 @@ func printResults(out io.Writer, results []scan.Results, filter string) error {
 		message += fmt.Sprintln()
 		//looping through tcp ports
 		for _, port := range result.PortStates {
-			if port.TCPOpen.String() == filter {
-				message += fmt.Sprintf("\t%d TCP: %s\n", port.Port, port.TCPOpen )
-			}
+			message += fmt.Sprintf("\t%d TCP: %s\n", port.Port, port.TCPOpen)
 			// continue
 		}
 		message += fmt.Sprintln()
-		
+
 		//looping through udp ports
 		for _, port := range result.PortStates {
-			if port.TCPOpen.String() == filter {
-				message += fmt.Sprintf("\t%d UDP: %s\n", port.Port, port.UDPOpen)
-			}
+			message += fmt.Sprintf("\t%d UDP: %s\n", port.Port, port.UDPOpen)
 		}
 		message += fmt.Sprintln()
 	}
@@ -133,7 +165,6 @@ func init() {
 	scanCmd.Flags().IntSliceP("ports", "p", []int{22, 80, 443}, "ports to scan") //sets default scan command
 	scanCmd.Flags().StringP("portRange", "r", "80-82", "range of ports to scan")
 	//add filter for open/closed ports
-	scanCmd.Flags().StringP("filter","t","both","filter open or closed ports(both, opened, closed)")
 
 	// Here you will define your flags and configuration settings.
 
